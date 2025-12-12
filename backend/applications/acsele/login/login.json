@@ -1,0 +1,14 @@
+[
+  {
+    "id": "acsele",
+    "name": "ACSELE",
+    "scenarios": [
+      {
+        "id": "login",
+        "name": "Login ACSELE",
+        "file": "tests/acsele/login.spec.ts",
+        "tags": ["smoke", "regression"]
+      }
+    ]
+  }
+]

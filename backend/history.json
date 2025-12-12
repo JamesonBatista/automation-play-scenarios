@@ -1,5 +1,24 @@
 [
   {
+    "executionId": "mj3fuktfyjj7l4zbhkd",
+    "projectId": "acsele",
+    "projectName": "ACSELE",
+    "scenarioId": "login",
+    "scenarioName": "Login ACSELE",
+    "file": "tests/acsele/login.spec.ts",
+    "tags": [
+      "smoke",
+      "regression"
+    ],
+    "environmentId": "DEV",
+    "environmentName": "DEV",
+    "baseUrl": "https://dev.acsele.local",
+    "status": "SUCCESS",
+    "startedAt": "2025-12-12T22:28:13.954Z",
+    "finishedAt": "2025-12-12T22:28:25.054Z",
+    "durationMs": 11100
+  },
+  {
     "executionId": "mj3afuhl5n1cduarpzj",
     "projectId": "acsele",
     "projectName": "ACSELE",
