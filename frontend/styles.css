@@ -293,3 +293,52 @@ pre{
   color:var(--muted);
   font-size:12px;
 }
+
+/* ================= LOGIN ================= */
+
+.login {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at top left, #1b2450 0%, transparent 40%),
+    radial-gradient(circle at bottom right, #0f172a 0%, transparent 40%),
+    var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.login h2 {
+  margin-bottom: 10px;
+}
+
+.login .loginBox {
+  background: linear-gradient(180deg, var(--panel), var(--panel2));
+  padding: 32px;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.login input {
+  background: #020617;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.login button {
+  margin-top: 8px;
+}
+
+.loginError {
+  color: var(--danger);
+  font-size: 13px;
+  text-align: center;
+}

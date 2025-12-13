@@ -11,7 +11,7 @@ app.use(express.json());
 const PORT = 3000;
 const MAX_CONCURRENT = Number(process.env.MAX_CONCURRENT || 2);
 
-const APPLICATIONS_DIR = path.resolve(__dirname, '..', 'applications');
+const APPLICATIONS_DIR = path.resolve(__dirname, "..", "applications");
 
 const HISTORY_FILE = path.join(__dirname, "history.json");
 
@@ -242,16 +242,20 @@ function runExecution(executionId) {
 
   setStatus(executionId, "RUNNING");
 
-  const child = spawn('npx', ['playwright', 'test', exec.file, '--reporter=list'], {
-    shell: true,
-    env: {
-      ...process.env,
-      PROJECT_ID: exec.projectId,
-      ENV_ID: exec.environmentId,
-      ENV_NAME: exec.environmentName,
-      BASE_URL: exec.baseUrl,
-    },
-  });
+  const child = spawn(
+    "npx",
+    ["playwright", "test", exec.file, "--reporter=list"],
+    {
+      shell: true,
+      env: {
+        ...process.env,
+        PROJECT_ID: exec.projectId,
+        ENV_ID: exec.environmentId,
+        ENV_NAME: exec.environmentName,
+        BASE_URL: exec.baseUrl,
+      },
+    }
+  );
 
   processes.set(executionId, child);
   broadcastStats();
@@ -390,26 +394,26 @@ app.get("/stream/:id", (req, res) => {
    RUN
 ========================== */
 
-app.post('/run', (req, res) => {
+app.post("/run", (req, res) => {
   const { executionId, projectId, scenarioId, environmentId } = req.body;
 
   const projects = loadProjectsFromApplications();
 
-  const project = projects.find(p => p.id === projectId);
+  const project = projects.find((p) => p.id === projectId);
   if (!project) {
-    return res.status(400).json({ error: 'Projeto inválido' });
+    return res.status(400).json({ error: "Projeto inválido" });
   }
 
-  const scenario = project.scenarios.find(s => s.id === scenarioId);
+  const scenario = project.scenarios.find((s) => s.id === scenarioId);
   if (!scenario) {
     return res.status(400).json({
-      error: `Cenário não encontrado: ${scenarioId}`
+      error: `Cenário não encontrado: ${scenarioId}`,
     });
   }
 
-  const environment = project.environments.find(e => e.id === environmentId);
+  const environment = project.environments.find((e) => e.id === environmentId);
   if (!environment) {
-    return res.status(400).json({ error: 'Ambiente inválido' });
+    return res.status(400).json({ error: "Ambiente inválido" });
   }
 
   executions.set(executionId, {
@@ -418,8 +422,8 @@ app.post('/run', (req, res) => {
     projectId: project.id,
     projectName: project.name,
 
-    scenarioId: scenario.id,          // ✅ VEM DO JSON
-    scenarioName: scenario.name,      // ✅ VEM DO JSON
+    scenarioId: scenario.id, // ✅ VEM DO JSON
+    scenarioName: scenario.name, // ✅ VEM DO JSON
     file: scenario.file,
     tags: scenario.tags || [],
 
@@ -427,10 +431,10 @@ app.post('/run', (req, res) => {
     environmentName: environment.name,
     baseUrl: environment.baseUrl,
 
-    status: 'CREATED',
+    status: "CREATED",
     startedAt: nowISO(),
     updatedAt: nowISO(),
-    startTime: Date.now()
+    startTime: Date.now(),
   });
 
   res.json({ ok: true });
@@ -479,6 +483,16 @@ app.post("/stop", (req, res) => {
   }
 
   res.json({ stopped: false });
+});
+
+app.delete("/history", (req, res) => {
+  try {
+    fs.writeFileSync(HISTORY_FILE, JSON.stringify([], null, 2));
+    res.json({ ok: true });
+  } catch (err) {
+    console.error("Erro ao limpar histórico:", err);
+    res.status(500).json({ error: "Erro ao limpar histórico" });
+  }
 });
 
 /* ==========================

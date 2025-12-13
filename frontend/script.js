@@ -1,32 +1,99 @@
-const projectsEl = document.getElementById("projects");
-const historyEl = document.getElementById("history");
-const statsEl = document.getElementById("stats");
-const clearHistoryBtn = document.getElementById("clearHistory");
-
 const API = "http://localhost:3000";
 
 /* ==========================
-   👤 USER (SIMPLES)
+   USERS (FRONT AUTH)
 ========================== */
 
 const USERS = [
-  { name: "Roberto", projects: ["ACSELE"] },
-  { name: "Maria", projects: ["GTI", "CLAIMS"] },
-  { name: "Admin", projects: ["ACSELE", "GTI", "CLAIMS", "AXAHUB"] },
+  { name: "Roberto", password: "123", projects: ["ACSELE"] },
+  { name: "Maria", password: "123", projects: ["GTI", "CLAIMS"] },
+  { name: "Admin", password: "admin", projects: ["ACSELE", "GTI", "CLAIMS", "AXAHUB"] },
 ];
 
-const CURRENT_USER = "Maria"; // 🔐 troca aqui
+/* ==========================
+   ELEMENTS
+========================== */
 
-function getCurrentUser() {
-  return USERS.find((u) => u.name === CURRENT_USER) || null;
+const loginScreen = document.getElementById("loginScreen");
+const appScreen = document.getElementById("app");
+const loginUserInput = document.getElementById("loginUser");
+const loginPassInput = document.getElementById("loginPass");
+const loginBtn = document.getElementById("loginBtn");
+const loginError = document.getElementById("loginError");
+
+const logoutBtn = document.getElementById("logoutBtn");
+const clearHistoryBtn = document.getElementById("clearHistory");
+
+const projectsEl = document.getElementById("projects");
+const historyEl = document.getElementById("history");
+const statsEl = document.getElementById("stats");
+
+/* ==========================
+   CTRL + R = LIMPA LOGIN
+========================== */
+
+// const nav = performance.getEntriesByType("navigation")[0];
+// if (nav && nav.type === "reload") {
+//   localStorage.removeItem("loggedUser");
+// }
+
+/* ==========================
+   AUTH
+========================== */
+
+function getLoggedUser() {
+  const raw = localStorage.getItem("loggedUser");
+  return raw ? JSON.parse(raw) : null;
 }
 
-function filterProjectsByUser(projects, user) {
-  if (!user || !Array.isArray(user.projects)) return [];
-  const allowed = user.projects.map((p) => String(p).toLowerCase());
-  return (projects || []).filter((p) =>
-    allowed.includes(String(p.id).toLowerCase())
+function login(user, pass) {
+  const found = USERS.find(
+    (u) => u.name === user && u.password === pass
   );
+  if (!found) return null;
+
+  localStorage.setItem("loggedUser", JSON.stringify(found));
+  return found;
+}
+
+function logout() {
+  localStorage.removeItem("loggedUser");
+  location.reload();
+}
+
+function showLogin() {
+  loginScreen.style.display = "flex";
+  appScreen.style.display = "none";
+}
+
+function showApp() {
+  loginScreen.style.display = "none";
+  appScreen.style.display = "block";
+}
+
+/* ==========================
+   LOGIN ACTION
+========================== */
+
+if (loginBtn) {
+  loginBtn.type = "button";
+  loginBtn.onclick = () => {
+    const user = loginUserInput.value.trim();
+    const pass = loginPassInput.value.trim();
+
+    const logged = login(user, pass);
+    if (!logged) {
+      loginError.textContent = "Usuário ou senha inválidos";
+      return;
+    }
+
+    startApp(logged);
+  };
+}
+
+if (logoutBtn) {
+  logoutBtn.type = "button";
+  logoutBtn.onclick = logout;
 }
 
 /* ==========================
@@ -38,24 +105,16 @@ function generateExecutionId() {
 }
 
 function msToHuman(ms) {
-  const s = Math.floor((ms || 0) / 1000);
+  const s = Math.floor(ms / 1000);
   if (s < 60) return `${s}s`;
   const m = Math.floor(s / 60);
   const r = s % 60;
   return `${m}m ${r}s`;
 }
 
-function formatDateBR(isoString) {
-  if (!isoString) return "-";
-  const date = new Date(isoString);
-  return date.toLocaleString("pt-BR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
+function formatDateBR(iso) {
+  if (!iso) return "-";
+  return new Date(iso).toLocaleString("pt-BR");
 }
 
 /* ==========================
@@ -63,42 +122,42 @@ function formatDateBR(isoString) {
 ========================== */
 
 async function loadProjects() {
-  const r = await fetch(`${API}/projects`);
-  return await r.json();
+  return (await fetch(`${API}/projects`)).json();
 }
 
 async function loadHistory() {
-  const r = await fetch(`${API}/history?limit=80`);
-  return await r.json();
+  return (await fetch(`${API}/history?limit=80`)).json();
 }
 
 async function loadStats() {
-  const r = await fetch(`${API}/stats`);
-  return await r.json();
+  return (await fetch(`${API}/stats`)).json();
 }
 
 /* ==========================
-   STATS
+   CORE
 ========================== */
+
+function filterProjectsByUser(projects, user) {
+  const allowed = user.projects.map((p) => p.toLowerCase());
+  return projects.filter((p) =>
+    allowed.includes(p.id.toLowerCase())
+  );
+}
 
 function updateStatsUI({ running, maxConcurrent, queued }) {
   statsEl.textContent = `Rodando: ${running}/${maxConcurrent} • Fila: ${queued}`;
-}
-
-async function refreshStats() {
-  const s = await loadStats();
-  updateStatsUI(s);
 }
 
 /* ==========================
    HISTORY
 ========================== */
 
-function renderHistory(items) {
+async function refreshHistory() {
+  const items = await loadHistory();
   historyEl.innerHTML = "";
 
-  if (!items || items.length === 0) {
-    historyEl.innerHTML = `<div class="small">Sem histórico ainda.</div>`;
+  if (!items.length) {
+    historyEl.innerHTML = `<div class="small">Sem histórico.</div>`;
     return;
   }
 
@@ -107,39 +166,20 @@ function renderHistory(items) {
     div.className = "histItem";
     div.innerHTML = `
       <div class="row">
-        <strong>${it.projectName || "-"}</strong>
-        <span class="small">•</span>
-        <span class="small">${it.scenarioName || "-"}</span>
+        <strong>${it.projectName}</strong>
+        <span class="small">• ${it.scenarioName}</span>
       </div>
       <div class="row">
-        <span class="status ${it.status || ""}">${it.status || "-"}</span>
-        <span class="small">• ${it.environmentName || "-"}</span>
+        <span class="status ${it.status}">${it.status}</span>
+        <span class="small">• ${it.environmentName}</span>
         <span class="small">• ${msToHuman(it.durationMs || 0)}</span>
       </div>
       <div class="small">
         ${formatDateBR(it.startedAt)} → ${formatDateBR(it.finishedAt)}
       </div>
-      <div class="small">Tags: ${(it.tags || []).join(", ") || "-"}</div>
     `;
     historyEl.appendChild(div);
   }
-}
-
-async function refreshHistory() {
-  const items = await loadHistory();
-  renderHistory(items);
-}
-
-/* ==========================
-   TAGS HELPERS
-========================== */
-
-function getProjectTags(project) {
-  const tags = new Set();
-  for (const sc of project.scenarios || []) {
-    for (const t of sc.tags || []) tags.add(t);
-  }
-  return Array.from(tags).sort();
 }
 
 /* ==========================
@@ -147,30 +187,22 @@ function getProjectTags(project) {
 ========================== */
 
 function createScenarioCard({ project, scenario }) {
-  const scenarioDiv = document.createElement("div");
-  scenarioDiv.className = "scenario";
+  const el = document.createElement("div");
+  el.className = "scenario";
 
   const rowTop = document.createElement("div");
   rowTop.className = "row";
 
   const title = document.createElement("strong");
-  title.textContent = scenario.name || scenario.id || "Sem nome";
+  title.textContent = scenario.name;
 
   const envSelect = document.createElement("select");
-  for (const e of project.environments || []) {
+  for (const e of project.environments) {
     const opt = document.createElement("option");
     opt.value = e.id;
     opt.textContent = e.name;
     envSelect.appendChild(opt);
   }
-
-  const tagsWrap = document.createElement("span");
-  (scenario.tags || []).forEach((t) => {
-    const pill = document.createElement("span");
-    pill.className = "tagPill";
-    pill.textContent = `#${t}`;
-    tagsWrap.appendChild(pill);
-  });
 
   const status = document.createElement("span");
   status.className = "status";
@@ -180,166 +212,96 @@ function createScenarioCard({ project, scenario }) {
   timer.className = "meta";
   timer.textContent = "⏱️ 0s";
 
-  rowTop.appendChild(title);
-  rowTop.appendChild(envSelect);
-  rowTop.appendChild(tagsWrap);
-  rowTop.appendChild(status);
-  rowTop.appendChild(timer);
+  rowTop.append(title, envSelect, status, timer);
 
-  const rowActions = document.createElement("div");
-  rowActions.className = "row";
+  const actions = document.createElement("div");
+  actions.className = "row";
 
   const playBtn = document.createElement("button");
+  playBtn.type = "button";
   playBtn.className = "primary";
   playBtn.textContent = "▶ Play";
 
   const stopBtn = document.createElement("button");
+  stopBtn.type = "button";
   stopBtn.className = "danger";
   stopBtn.textContent = "⛔ Stop";
   stopBtn.style.display = "none";
 
-  rowActions.appendChild(playBtn);
-  rowActions.appendChild(stopBtn);
+  actions.append(playBtn, stopBtn);
+  el.append(rowTop, actions);
 
-  scenarioDiv.appendChild(rowTop);
-  scenarioDiv.appendChild(rowActions);
+  let execId, source, startedAt, interval, queuePos;
 
-  let source = null;
-  let executionId = null;
-  let startedAt = null;
-  let interval = null;
-  let queuePos = null;
-
-  function setUIStateIdle() {
-    playBtn.disabled = false;
-    playBtn.textContent = "▶ Play";
-    stopBtn.style.display = "none";
-    stopBtn.disabled = false;
-    queuePos = null;
-    timer.textContent = "⏱️ 0s";
+  function setStatus(st) {
+    status.className = `status ${st}`;
+    status.textContent =
+      st === "QUEUED" && queuePos ? `QUEUED (#${queuePos})` : st;
   }
 
   function startTimer() {
     startedAt = Date.now();
-    timer.textContent = "⏱️ 0s";
     interval = setInterval(() => {
-      const ms = Date.now() - startedAt;
-      timer.textContent = `⏱️ ${msToHuman(ms)}`;
+      timer.textContent = `⏱️ ${msToHuman(Date.now() - startedAt)}`;
     }, 1000);
   }
 
   function stopTimer() {
     clearInterval(interval);
-    interval = null;
+    timer.textContent = "⏱️ 0s";
   }
 
-  function setStatusUI(st) {
-    status.className = `status ${st}`;
-    if (st === "QUEUED" && queuePos) status.textContent = `QUEUED (#${queuePos})`;
-    else status.textContent = st;
-  }
-
-  async function runOnce(customEnvId) {
-    if (!project.environments || project.environments.length === 0) {
-      alert("Este projeto não possui ambientes cadastrados.");
-      return;
-    }
-
+  async function runOnce(customEnv) {
+    execId = generateExecutionId();
     playBtn.disabled = true;
-    playBtn.textContent = "⏳";
     stopBtn.style.display = "inline-block";
-    stopBtn.disabled = false;
-
-    executionId = generateExecutionId();
-    const environmentId = customEnvId || envSelect.value;
-
-    queuePos = null;
-    setStatusUI("CONNECTING");
+    setStatus("CONNECTING");
     startTimer();
 
-    // abre SSE
-    source = new EventSource(`${API}/stream/${executionId}`);
+    source = new EventSource(`${API}/stream/${execId}`);
 
     source.onopen = async () => {
-      setStatusUI("QUEUED");
+      setStatus("QUEUED");
       await fetch(`${API}/run`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          executionId,
+          executionId: execId,
           projectId: project.id,
           scenarioId: scenario.id,
-          environmentId,
+          environmentId: customEnv || envSelect.value,
         }),
       });
     };
 
-    source.onmessage = (event) => {
-      const msg = event.data;
-
-      if (msg.startsWith("__STATS__:")) {
-        try {
-          const payload = JSON.parse(msg.replace("__STATS__:", ""));
-          updateStatsUI(payload);
-        } catch {}
-        return;
-      }
+    source.onmessage = (e) => {
+      const msg = e.data;
 
       if (msg.startsWith("__QUEUEPOS__:")) {
         queuePos = Number(msg.split(":")[1]);
-        setStatusUI("QUEUED");
+        setStatus("QUEUED");
         return;
       }
 
       if (msg.startsWith("__STATUS__:")) {
-        const st = msg.split(":")[1];
-        setStatusUI(st);
-        return;
-      }
-
-      if (msg === "__CANCELLED__") {
-        setStatusUI("CANCELLED");
+        setStatus(msg.split(":")[1]);
         return;
       }
 
       if (msg.startsWith("__END__")) {
-        const parts = msg.split(":");
-        const code = parts[1];
-
         stopTimer();
-
-        if (code === "0") setStatusUI("SUCCESS");
-        else if (code === "CANCELLED") setStatusUI("CANCELLED");
-        else setStatusUI("FAILED");
-
-        try {
-          source.close();
-        } catch {}
-        source = null;
-
-        setUIStateIdle();
+        playBtn.disabled = false;
+        stopBtn.style.display = "none";
+        source.close();
         refreshHistory();
-        return;
       }
     };
 
-    source.onerror = async () => {
-      stopTimer();
-      setStatusUI("FAILED");
-      try {
-        source.close();
-      } catch {}
-      source = null;
-      setUIStateIdle();
-      await refreshStats();
-    };
-
     stopBtn.onclick = async () => {
-      stopBtn.disabled = true;
       await fetch(`${API}/stop`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ executionId }),
+        body: JSON.stringify({ executionId: execId }),
       });
     };
   }
@@ -347,62 +309,48 @@ function createScenarioCard({ project, scenario }) {
   playBtn.onclick = () => runOnce();
 
   return {
-    element: scenarioDiv,
+    element: el,
     runOnce,
-    getSelectedEnv: () => envSelect.value,
-    setSelectedEnv: (envId) => {
-      envSelect.value = envId;
-    },
+    setSelectedEnv: (envId) => (envSelect.value = envId),
   };
 }
 
 /* ==========================
-   PROJECT RENDER
+   PROJECTS (RUN ALL + ENV)
 ========================== */
 
 function renderProjects(projects) {
   projectsEl.innerHTML = "";
 
-  if (!projects || projects.length === 0) {
-    projectsEl.innerHTML = `<div class="small">Nenhum projeto disponível para este usuário.</div>`;
-    return;
-  }
-
   for (const project of projects) {
     const div = document.createElement("div");
     div.className = "project";
 
-    const headerWrap = document.createElement("div");
-    headerWrap.className = "projectHeader";
-
-    const scenariosCount = (project.scenarios || []).length;
+    const header = document.createElement("div");
+    header.className = "projectHeader";
 
     const title = document.createElement("h3");
     title.className = "projectTitle";
-    title.innerHTML = `<span>📦 ${project.name}</span><span class="badge">${scenariosCount} cenário(s)</span>`;
+    title.textContent = `📦 ${project.name}`;
 
     const tools = document.createElement("div");
     tools.className = "projectTools";
 
-    // Select de ambiente por projeto (aplica para Run All)
     const envSelectProject = document.createElement("select");
-    for (const e of project.environments || []) {
+    for (const e of project.environments) {
       const opt = document.createElement("option");
       opt.value = e.id;
       opt.textContent = e.name;
       envSelectProject.appendChild(opt);
     }
 
-    // Botão Run All
     const runAllBtn = document.createElement("button");
+    runAllBtn.type = "button";
     runAllBtn.className = "ghost";
     runAllBtn.textContent = "▶ Run All";
 
-    tools.appendChild(envSelectProject);
-    tools.appendChild(runAllBtn);
-
-    headerWrap.appendChild(title);
-    headerWrap.appendChild(tools);
+    tools.append(envSelectProject, runAllBtn);
+    header.append(title, tools);
 
     const scenariosDiv = document.createElement("div");
     scenariosDiv.className = "scenarios";
@@ -412,31 +360,23 @@ function renderProjects(projects) {
         scenariosDiv.style.display === "block" ? "none" : "block";
     };
 
-    // cria cards e guarda runners
-    const scenarioRunners = [];
-    for (const scenario of project.scenarios || []) {
-      const card = createScenarioCard({ project, scenario });
-      scenarioRunners.push({ scenario, card });
+    const runners = [];
+    for (const sc of project.scenarios) {
+      const card = createScenarioCard({ project, scenario: sc });
+      runners.push(card);
       scenariosDiv.appendChild(card.element);
     }
 
-    // Run All
-    runAllBtn.onclick = async () => {
-      if (!scenarioRunners.length) {
-        alert("Este projeto não possui cenários cadastrados.");
-        return;
-      }
+    runAllBtn.onclick = () => {
       const envId = envSelectProject.value;
-
       scenariosDiv.style.display = "block";
-      for (const item of scenarioRunners) {
-        item.card.setSelectedEnv(envId);
-        item.card.runOnce(envId);
+      for (const r of runners) {
+        r.setSelectedEnv(envId);
+        r.runOnce(envId);
       }
     };
 
-    div.appendChild(headerWrap);
-    div.appendChild(scenariosDiv);
+    div.append(header, scenariosDiv);
     projectsEl.appendChild(div);
   }
 }
@@ -446,39 +386,35 @@ function renderProjects(projects) {
 ========================== */
 
 if (clearHistoryBtn) {
+  clearHistoryBtn.type = "button";
   clearHistoryBtn.onclick = async () => {
     const ok = confirm("Deseja realmente limpar todo o histórico?");
     if (!ok) return;
 
-    // exige rota DELETE /history no backend
     await fetch(`${API}/history`, { method: "DELETE" });
-    await refreshHistory();
+    refreshHistory();
   };
 }
 
 /* ==========================
-   BOOT
+   START
 ========================== */
 
-async function boot() {
-  const user = getCurrentUser();
-  if (!user) {
-    projectsEl.innerHTML = `<div style="color:#ef4444">Usuário não autorizado</div>`;
-    return;
-  }
+async function startApp(user) {
+  showApp();
 
   const projects = await loadProjects();
-  const visibleProjects = filterProjectsByUser(projects, user);
+  const visible = filterProjectsByUser(projects, user);
 
-  renderProjects(visibleProjects);
-  await refreshHistory();
-  await refreshStats();
+  renderProjects(visible);
+  refreshHistory();
+  updateStatsUI(await loadStats());
 
-  // polling leve de stats (se não houver SSE ativo)
-  setInterval(refreshStats, 3000);
+  setInterval(async () => {
+    updateStatsUI(await loadStats());
+  }, 3000);
 }
 
-boot().catch((err) => {
-  console.error(err);
-  projectsEl.innerHTML = `<div style="color:#ef4444">Erro ao iniciar: ${String(err)}</div>`;
-});
+const logged = getLoggedUser();
+if (!logged) showLogin();
+else startApp(logged);
