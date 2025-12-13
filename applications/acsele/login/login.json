@@ -1,0 +1,14 @@
+[
+  {
+    "id": "login",
+    "name": "Login ACSELE",
+    "file": "tests/acsele/login.spec.ts",
+    "tags": ["smoke", "regression"]
+  },
+  {
+    "id": "cadastro",
+    "name": "Cadastro com sucesso",
+    "file": "tests/acsele/login.spec.ts",
+    "tags": ["smoke", "regression"]
+  }
+]

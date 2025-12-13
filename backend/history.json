@@ -1,5 +1,35 @@
 [
   {
+    "executionId": "mj48gcfirkk0bbkbjc",
+    "projectId": "acsele",
+    "projectName": "ACSELE",
+    "scenarioId": "acsele",
+    "scenarioName": "ACSELE",
+    "tags": [],
+    "environmentId": "QA",
+    "environmentName": "QA",
+    "baseUrl": "https://jamesonbatista.github.io/projectqatesterweb/",
+    "status": "CANCELLED",
+    "startedAt": "2025-12-13T11:48:58.750Z",
+    "finishedAt": "2025-12-13T11:49:00.637Z",
+    "durationMs": 1887
+  },
+  {
+    "executionId": "mj48g210c221mdxb1j",
+    "projectId": "acsele",
+    "projectName": "ACSELE",
+    "scenarioId": "acsele",
+    "scenarioName": "ACSELE",
+    "tags": [],
+    "environmentId": "QA",
+    "environmentName": "QA",
+    "baseUrl": "https://jamesonbatista.github.io/projectqatesterweb/",
+    "status": "SUCCESS",
+    "startedAt": "2025-12-13T11:48:45.281Z",
+    "finishedAt": "2025-12-13T11:48:55.952Z",
+    "durationMs": 10671
+  },
+  {
     "executionId": "mj48ezu2rjh1bgsj0pq",
     "projectId": "acsele",
     "projectName": "ACSELE",
