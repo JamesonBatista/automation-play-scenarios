@@ -1,23 +1,66 @@
 const projectsEl = document.getElementById("projects");
 const historyEl = document.getElementById("history");
-const refreshHistoryBtn = document.getElementById("refreshHistory");
-const exportCsvBtn = document.getElementById("exportCsv");
-const exportJsonBtn = document.getElementById("exportJson");
 const statsEl = document.getElementById("stats");
+const clearHistoryBtn = document.getElementById("clearHistory");
 
 const API = "http://localhost:3000";
+
+/* ==========================
+   👤 USER (SIMPLES)
+========================== */
+
+const USERS = [
+  { name: "Roberto", projects: ["ACSELE"] },
+  { name: "Maria", projects: ["GTI", "CLAIMS"] },
+  { name: "Admin", projects: ["ACSELE", "GTI", "CLAIMS", "AXAHUB"] },
+];
+
+const CURRENT_USER = "Maria"; // 🔐 troca aqui
+
+function getCurrentUser() {
+  return USERS.find((u) => u.name === CURRENT_USER) || null;
+}
+
+function filterProjectsByUser(projects, user) {
+  if (!user || !Array.isArray(user.projects)) return [];
+  const allowed = user.projects.map((p) => String(p).toLowerCase());
+  return (projects || []).filter((p) =>
+    allowed.includes(String(p.id).toLowerCase())
+  );
+}
+
+/* ==========================
+   UTIL
+========================== */
 
 function generateExecutionId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2);
 }
 
 function msToHuman(ms) {
-  const s = Math.floor(ms / 1000);
+  const s = Math.floor((ms || 0) / 1000);
   if (s < 60) return `${s}s`;
   const m = Math.floor(s / 60);
   const r = s % 60;
   return `${m}m ${r}s`;
 }
+
+function formatDateBR(isoString) {
+  if (!isoString) return "-";
+  const date = new Date(isoString);
+  return date.toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+}
+
+/* ==========================
+   API LOADERS
+========================== */
 
 async function loadProjects() {
   const r = await fetch(`${API}/projects`);
@@ -34,6 +77,23 @@ async function loadStats() {
   return await r.json();
 }
 
+/* ==========================
+   STATS
+========================== */
+
+function updateStatsUI({ running, maxConcurrent, queued }) {
+  statsEl.textContent = `Rodando: ${running}/${maxConcurrent} • Fila: ${queued}`;
+}
+
+async function refreshStats() {
+  const s = await loadStats();
+  updateStatsUI(s);
+}
+
+/* ==========================
+   HISTORY
+========================== */
+
 function renderHistory(items) {
   historyEl.innerHTML = "";
 
@@ -47,26 +107,22 @@ function renderHistory(items) {
     div.className = "histItem";
     div.innerHTML = `
       <div class="row">
-        <strong>${it.projectName}</strong>
+        <strong>${it.projectName || "-"}</strong>
         <span class="small">•</span>
-        <span class="small">${it.scenarioName}</span>
+        <span class="small">${it.scenarioName || "-"}</span>
       </div>
       <div class="row">
-        <span class="status ${it.status}">${it.status}</span>
-        <span class="small">• ${it.environmentName}</span>
+        <span class="status ${it.status || ""}">${it.status || "-"}</span>
+        <span class="small">• ${it.environmentName || "-"}</span>
         <span class="small">• ${msToHuman(it.durationMs || 0)}</span>
       </div>
       <div class="small">
-  ${formatDateBR(it.startedAt)} → ${formatDateBR(it.finishedAt)}
-</div>
+        ${formatDateBR(it.startedAt)} → ${formatDateBR(it.finishedAt)}
+      </div>
       <div class="small">Tags: ${(it.tags || []).join(", ") || "-"}</div>
     `;
     historyEl.appendChild(div);
   }
-}
-
-function updateStatsUI({ running, maxConcurrent, queued }) {
-  statsEl.textContent = `Rodando: ${running}/${maxConcurrent} • Fila: ${queued}`;
 }
 
 async function refreshHistory() {
@@ -74,10 +130,9 @@ async function refreshHistory() {
   renderHistory(items);
 }
 
-async function refreshStats() {
-  const s = await loadStats();
-  updateStatsUI(s);
-}
+/* ==========================
+   TAGS HELPERS
+========================== */
 
 function getProjectTags(project) {
   const tags = new Set();
@@ -87,10 +142,10 @@ function getProjectTags(project) {
   return Array.from(tags).sort();
 }
 
-/**
- * Cria card de cenário e retorna também um "runner" programático
- * para permitir "Run All" e "Run Tag"
- */
+/* ==========================
+   SCENARIO CARD
+========================== */
+
 function createScenarioCard({ project, scenario }) {
   const scenarioDiv = document.createElement("div");
   scenarioDiv.className = "scenario";
@@ -99,7 +154,7 @@ function createScenarioCard({ project, scenario }) {
   rowTop.className = "row";
 
   const title = document.createElement("strong");
-  title.textContent = scenario.name;
+  title.textContent = scenario.name || scenario.id || "Sem nome";
 
   const envSelect = document.createElement("select");
   for (const e of project.environments || []) {
@@ -108,6 +163,14 @@ function createScenarioCard({ project, scenario }) {
     opt.textContent = e.name;
     envSelect.appendChild(opt);
   }
+
+  const tagsWrap = document.createElement("span");
+  (scenario.tags || []).forEach((t) => {
+    const pill = document.createElement("span");
+    pill.className = "tagPill";
+    pill.textContent = `#${t}`;
+    tagsWrap.appendChild(pill);
+  });
 
   const status = document.createElement("span");
   status.className = "status";
@@ -119,17 +182,7 @@ function createScenarioCard({ project, scenario }) {
 
   rowTop.appendChild(title);
   rowTop.appendChild(envSelect);
-
-  // tags do cenário
-  const tagsWrap = document.createElement("span");
-  (scenario.tags || []).forEach((t) => {
-    const pill = document.createElement("span");
-    pill.className = "tagPill";
-    pill.textContent = `#${t}`;
-    tagsWrap.appendChild(pill);
-  });
   rowTop.appendChild(tagsWrap);
-
   rowTop.appendChild(status);
   rowTop.appendChild(timer);
 
@@ -148,11 +201,8 @@ function createScenarioCard({ project, scenario }) {
   rowActions.appendChild(playBtn);
   rowActions.appendChild(stopBtn);
 
-  const log = document.createElement("pre");
-
   scenarioDiv.appendChild(rowTop);
   scenarioDiv.appendChild(rowActions);
-//   scenarioDiv.appendChild(log);
 
   let source = null;
   let executionId = null;
@@ -166,6 +216,7 @@ function createScenarioCard({ project, scenario }) {
     stopBtn.style.display = "none";
     stopBtn.disabled = false;
     queuePos = null;
+    timer.textContent = "⏱️ 0s";
   }
 
   function startTimer() {
@@ -184,11 +235,8 @@ function createScenarioCard({ project, scenario }) {
 
   function setStatusUI(st) {
     status.className = `status ${st}`;
-    if (st === "QUEUED" && queuePos) {
-      status.textContent = `QUEUED (#${queuePos})`;
-    } else {
-      status.textContent = st;
-    }
+    if (st === "QUEUED" && queuePos) status.textContent = `QUEUED (#${queuePos})`;
+    else status.textContent = st;
   }
 
   async function runOnce(customEnvId) {
@@ -197,7 +245,6 @@ function createScenarioCard({ project, scenario }) {
       return;
     }
 
-    log.textContent = "";
     playBtn.disabled = true;
     playBtn.textContent = "⏳";
     stopBtn.style.display = "inline-block";
@@ -252,7 +299,6 @@ function createScenarioCard({ project, scenario }) {
 
       if (msg === "__CANCELLED__") {
         setStatusUI("CANCELLED");
-        log.textContent += "\n[EXECUTION CANCELLED]\n";
         return;
       }
 
@@ -275,16 +321,11 @@ function createScenarioCard({ project, scenario }) {
         refreshHistory();
         return;
       }
-
-      // log normal
-      log.textContent += msg;
-      log.scrollTop = log.scrollHeight;
     };
 
     source.onerror = async () => {
       stopTimer();
       setStatusUI("FAILED");
-      log.textContent += "\n[SSE ERROR]\n";
       try {
         source.close();
       } catch {}
@@ -315,8 +356,17 @@ function createScenarioCard({ project, scenario }) {
   };
 }
 
+/* ==========================
+   PROJECT RENDER
+========================== */
+
 function renderProjects(projects) {
   projectsEl.innerHTML = "";
+
+  if (!projects || projects.length === 0) {
+    projectsEl.innerHTML = `<div class="small">Nenhum projeto disponível para este usuário.</div>`;
+    return;
+  }
 
   for (const project of projects) {
     const div = document.createElement("div");
@@ -334,12 +384,7 @@ function renderProjects(projects) {
     const tools = document.createElement("div");
     tools.className = "projectTools";
 
-    // Botão Run All
-    const runAllBtn = document.createElement("button");
-    runAllBtn.className = "ghost";
-    runAllBtn.textContent = "▶ Run All";
-
-    // Select de ambiente por projeto (aplica para Run All / Run Tag)
+    // Select de ambiente por projeto (aplica para Run All)
     const envSelectProject = document.createElement("select");
     for (const e of project.environments || []) {
       const opt = document.createElement("option");
@@ -348,29 +393,13 @@ function renderProjects(projects) {
       envSelectProject.appendChild(opt);
     }
 
-    // Tags do projeto
-    const tags = getProjectTags(project);
-    const tagSelect = document.createElement("select");
-    const opt0 = document.createElement("option");
-    opt0.value = "";
-    opt0.textContent = "Tag (opcional)";
-    tagSelect.appendChild(opt0);
-
-    for (const t of tags) {
-      const o = document.createElement("option");
-      o.value = t;
-      o.textContent = `#${t}`;
-      tagSelect.appendChild(o);
-    }
-
-    const runTagBtn = document.createElement("button");
-    runTagBtn.className = "ghost";
-    runTagBtn.textContent = "▶ Run Tag";
+    // Botão Run All
+    const runAllBtn = document.createElement("button");
+    runAllBtn.className = "ghost";
+    runAllBtn.textContent = "▶ Run All";
 
     tools.appendChild(envSelectProject);
     tools.appendChild(runAllBtn);
-    // tools.appendChild(tagSelect);
-    // tools.appendChild(runTagBtn);
 
     headerWrap.appendChild(title);
     headerWrap.appendChild(tools);
@@ -391,32 +420,18 @@ function renderProjects(projects) {
       scenariosDiv.appendChild(card.element);
     }
 
-    // Run All (dispara todos; backend controla fila/concurrency)
+    // Run All
     runAllBtn.onclick = async () => {
+      if (!scenarioRunners.length) {
+        alert("Este projeto não possui cenários cadastrados.");
+        return;
+      }
       const envId = envSelectProject.value;
-      // garante aberto
+
       scenariosDiv.style.display = "block";
       for (const item of scenarioRunners) {
         item.card.setSelectedEnv(envId);
         item.card.runOnce(envId);
-      }
-    };
-
-    // Run Tag (dispara só os que contêm a tag)
-    runTagBtn.onclick = async () => {
-      const envId = envSelectProject.value;
-      const tag = tagSelect.value;
-      if (!tag) {
-        alert("Selecione uma tag para rodar.");
-        return;
-      }
-      scenariosDiv.style.display = "block";
-      for (const item of scenarioRunners) {
-        const scTags = item.scenario.tags || [];
-        if (scTags.includes(tag)) {
-          item.card.setSelectedEnv(envId);
-          item.card.runOnce(envId);
-        }
       }
     };
 
@@ -426,52 +441,44 @@ function renderProjects(projects) {
   }
 }
 
-async function downloadFile(url, filename) {
-  const r = await fetch(url);
-  const blob = await r.blob();
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(a.href);
+/* ==========================
+   CLEAR HISTORY
+========================== */
+
+if (clearHistoryBtn) {
+  clearHistoryBtn.onclick = async () => {
+    const ok = confirm("Deseja realmente limpar todo o histórico?");
+    if (!ok) return;
+
+    // exige rota DELETE /history no backend
+    await fetch(`${API}/history`, { method: "DELETE" });
+    await refreshHistory();
+  };
 }
 
-exportCsvBtn.onclick = () =>
-  downloadFile(`${API}/history/export?format=csv`, "history.csv");
-exportJsonBtn.onclick = () =>
-  downloadFile(`${API}/history/export?format=json`, "history.json");
-
-refreshHistoryBtn.onclick = refreshHistory;
+/* ==========================
+   BOOT
+========================== */
 
 async function boot() {
+  const user = getCurrentUser();
+  if (!user) {
+    projectsEl.innerHTML = `<div style="color:#ef4444">Usuário não autorizado</div>`;
+    return;
+  }
+
   const projects = await loadProjects();
-  renderProjects(projects);
+  const visibleProjects = filterProjectsByUser(projects, user);
+
+  renderProjects(visibleProjects);
   await refreshHistory();
   await refreshStats();
 
-  // polling leve de stats (se SSE não estiver ativo em alguma execução)
+  // polling leve de stats (se não houver SSE ativo)
   setInterval(refreshStats, 3000);
-}
-function formatDateBR(isoString) {
-  if (!isoString) return "-";
-
-  const date = new Date(isoString);
-
-  return date.toLocaleString("pt-BR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
 }
 
 boot().catch((err) => {
   console.error(err);
-  projectsEl.innerHTML = `<div style="color:#ef4444">Erro ao iniciar: ${String(
-    err
-  )}</div>`;
+  projectsEl.innerHTML = `<div style="color:#ef4444">Erro ao iniciar: ${String(err)}</div>`;
 });
