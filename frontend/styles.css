@@ -1,22 +1,26 @@
 :root{
-  --bg:#0e1424;
-  --panel:#1b2438;
-  --panel2:#111827;
-  --panel-hover:#222c44;
+  /* ===== BASE ===== */
+  --bg:#0b1020;                 /* fundo mais limpo */
+  --panel:#1f2a44;              /* cartões mais claros */
+  --panel2:#162038;
+  --panel-hover:#273458;
 
-  --text:#e5e7eb;
-  --muted:#9ca3af;
+  --text:#f1f5f9;               /* texto mais branco */
+  --muted:#a5b4fc;              /* azul suave futurista */
 
-  --primary:#3b82f6;     /* azul profissional */
-  --primary-hover:#2563eb;
+  /* ===== BRAND ===== */
+  --primary:#60a5fa;            /* azul neon clean */
+  --primary-hover:#3b82f6;
 
-  --success:#22c55e;
-  --warning:#f59e0b;
-  --danger:#ef4444;
+  --success:#4ade80;
+  --warning:#facc15;
+  --danger:#f87171;
 
-  --border:rgba(255,255,255,.08);
-  --radius:14px;
+  /* ===== UI ===== */
+  --border:rgba(148,163,184,.18);
+  --radius:16px;
 }
+
 
 *{box-sizing:border-box}
 
@@ -163,7 +167,7 @@ button:disabled{
 }
 
 .projectTitle:hover{
-  text-decoration:underline;
+ font-size: 20px;
 }
 
 .badge{

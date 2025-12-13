@@ -5,7 +5,7 @@ const API = "http://localhost:3000";
 ========================== */
 
 const USERS = [
-  { name: "Roberto", password: "123", projects: ["ACSELE"] },
+  { name: "Roberto", password: "123", projects: ["ACSELE", "CLAIMS"] },
   { name: "Maria", password: "123", projects: ["GTI", "CLAIMS"] },
   { name: "Admin", password: "admin", projects: ["ACSELE", "GTI", "CLAIMS", "AXAHUB"] },
 ];

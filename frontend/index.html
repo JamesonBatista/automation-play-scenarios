@@ -1,60 +1,61 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Automation Runner</title>
-  <link rel="stylesheet" href="styles.css" />
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<title>Automation Runner</title>
+	<link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
 
-  <!-- ================= LOGIN ================= -->
-  <div id="loginScreen" class="login">
-    <div class="loginBox">
-      <h2>🔐 Automation Runner</h2>
+	<!-- ================= LOGIN ================= -->
+	<div id="loginScreen" class="login">
+			<form id="loginForm" class="loginBox">
+				<h2>🔐 Automation Runner</h2>
 
-      <input id="loginUser" placeholder="Usuário" />
-      <input id="loginPass" type="password" placeholder="Senha" />
+				<input id="loginUser" placeholder="Usuário" />
+				<input id="loginPass" type="password" placeholder="Senha" />
 
-      <!-- ⬇⬇⬇ AQUI ESTAVA O BUG -->
-      <button id="loginBtn" type="button">Entrar</button>
+				<button id="loginBtn" type="submit">Entrar</button>
+				<div id="loginError" class="loginError"></div>
+			</form>
+	</div>
 
-      <div id="loginError" class="loginError"></div>
-    </div>
-  </div>
+	<!-- ================= APP ================= -->
+	<div id="app" style="display:none">
 
-  <!-- ================= APP ================= -->
-  <div id="app" style="display:none">
+		<header class="top">
+			<div class="brand">
+				<h1>🧪 Automation Runner</h1>
+				<div id="stats" class="stats">Rodando: 0/0 • Fila: 0</div>
+			</div>
 
-    <header class="top">
-      <div class="brand">
-        <h1>🧪 Automation Runner</h1>
-        <div id="stats" class="stats">Rodando: 0/0 • Fila: 0</div>
-      </div>
+			<div class="actions">
+				<!-- ⬇⬇⬇ AQUI TAMBÉM -->
+				<button id="logoutBtn" type="button" class="ghost">🚪 Sair</button>
+				<button id="clearHistory" type="button" class="danger">
+					🧹 Limpar histórico
+				</button>
+			</div>
+		</header>
 
-      <div class="actions">
-        <!-- ⬇⬇⬇ AQUI TAMBÉM -->
-        <button id="logoutBtn" type="button" class="ghost">🚪 Sair</button>
-        <button id="clearHistory" type="button" class="danger">
-          🧹 Limpar histórico
-        </button>
-      </div>
-    </header>
+		<main class="layout">
+			<section>
+				<h2 class="sectionTitle">Projetos</h2>
+				<div id="projects"></div>
+			</section>
 
-    <main class="layout">
-      <section>
-        <h2 class="sectionTitle">Projetos</h2>
-        <div id="projects"></div>
-      </section>
+			<aside class="history">
+				<h2 class="sectionTitle">Histórico</h2>
+				<div id="history"></div>
+			</aside>
+		</main>
 
-      <aside class="history">
-        <h2 class="sectionTitle">Histórico</h2>
-        <div id="history"></div>
-      </aside>
-    </main>
+	</div>
 
-  </div>
-
-  <script src="script.js"></script>
+	<script src="script.js"></script>
 </body>
+
 </html>

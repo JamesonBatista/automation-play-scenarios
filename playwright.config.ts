@@ -43,9 +43,6 @@ export default defineConfig({
   projects: [
     { name: 'ACSELE', 
       use: { channel: "chrome", baseURL: "https://jamesonbatista.github.io/" }, }
-    // Se quiser depois:
-    // { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
-    // { name: 'webkit', use: { ...devices['Desktop Safari'] } }
   ],
 
   outputDir: 'test-results'

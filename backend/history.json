@@ -1,1 +1,17 @@
-[]
+[
+  {
+    "executionId": "mj4obb60ot9k6g7c3m9",
+    "projectId": "acsele",
+    "projectName": "ACSELE",
+    "scenarioId": "login",
+    "scenarioName": "Acessando Login acsele",
+    "file": "tests/acsele/login.spec.ts",
+    "tags": [],
+    "environmentId": "QA",
+    "environmentName": "QA",
+    "status": "SUCCESS",
+    "startedAt": "2025-12-13T19:12:57.727Z",
+    "finishedAt": "2025-12-13T19:13:09.849Z",
+    "durationMs": 12122
+  }
+]
