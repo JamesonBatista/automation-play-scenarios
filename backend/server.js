@@ -242,7 +242,7 @@ function runExecution(executionId) {
 
   setStatus(executionId, "RUNNING");
 
-  const child = spawn("npx", ["playwright", "test", exec.file], {
+  const child = spawn('npx', ['playwright', 'test', exec.file, '--reporter=list'], {
     shell: true,
     env: {
       ...process.env,

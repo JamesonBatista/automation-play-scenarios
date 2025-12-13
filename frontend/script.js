@@ -1,11 +1,11 @@
-const projectsEl = document.getElementById('projects');
-const historyEl = document.getElementById('history');
-const refreshHistoryBtn = document.getElementById('refreshHistory');
-const exportCsvBtn = document.getElementById('exportCsv');
-const exportJsonBtn = document.getElementById('exportJson');
-const statsEl = document.getElementById('stats');
+const projectsEl = document.getElementById("projects");
+const historyEl = document.getElementById("history");
+const refreshHistoryBtn = document.getElementById("refreshHistory");
+const exportCsvBtn = document.getElementById("exportCsv");
+const exportJsonBtn = document.getElementById("exportJson");
+const statsEl = document.getElementById("stats");
 
-const API = 'http://localhost:3000';
+const API = "http://localhost:3000";
 
 function generateExecutionId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2);
@@ -35,7 +35,7 @@ async function loadStats() {
 }
 
 function renderHistory(items) {
-  historyEl.innerHTML = '';
+  historyEl.innerHTML = "";
 
   if (!items || items.length === 0) {
     historyEl.innerHTML = `<div class="small">Sem histórico ainda.</div>`;
@@ -43,8 +43,8 @@ function renderHistory(items) {
   }
 
   for (const it of items) {
-    const div = document.createElement('div');
-    div.className = 'histItem';
+    const div = document.createElement("div");
+    div.className = "histItem";
     div.innerHTML = `
       <div class="row">
         <strong>${it.projectName}</strong>
@@ -56,8 +56,10 @@ function renderHistory(items) {
         <span class="small">• ${it.environmentName}</span>
         <span class="small">• ${msToHuman(it.durationMs || 0)}</span>
       </div>
-      <div class="small">${it.startedAt} → ${it.finishedAt}</div>
-      <div class="small">Tags: ${(it.tags || []).join(', ') || '-'}</div>
+      <div class="small">
+  ${formatDateBR(it.startedAt)} → ${formatDateBR(it.finishedAt)}
+</div>
+      <div class="small">Tags: ${(it.tags || []).join(", ") || "-"}</div>
     `;
     historyEl.appendChild(div);
   }
@@ -80,7 +82,7 @@ async function refreshStats() {
 function getProjectTags(project) {
   const tags = new Set();
   for (const sc of project.scenarios || []) {
-    for (const t of (sc.tags || [])) tags.add(t);
+    for (const t of sc.tags || []) tags.add(t);
   }
   return Array.from(tags).sort();
 }
@@ -90,39 +92,39 @@ function getProjectTags(project) {
  * para permitir "Run All" e "Run Tag"
  */
 function createScenarioCard({ project, scenario }) {
-  const scenarioDiv = document.createElement('div');
-  scenarioDiv.className = 'scenario';
+  const scenarioDiv = document.createElement("div");
+  scenarioDiv.className = "scenario";
 
-  const rowTop = document.createElement('div');
-  rowTop.className = 'row';
+  const rowTop = document.createElement("div");
+  rowTop.className = "row";
 
-  const title = document.createElement('strong');
+  const title = document.createElement("strong");
   title.textContent = scenario.name;
 
-  const envSelect = document.createElement('select');
+  const envSelect = document.createElement("select");
   for (const e of project.environments || []) {
-    const opt = document.createElement('option');
+    const opt = document.createElement("option");
     opt.value = e.id;
     opt.textContent = e.name;
     envSelect.appendChild(opt);
   }
 
-  const status = document.createElement('span');
-  status.className = 'status';
-  status.textContent = 'IDLE';
+  const status = document.createElement("span");
+  status.className = "status";
+  status.textContent = "IDLE";
 
-  const timer = document.createElement('span');
-  timer.className = 'meta';
-  timer.textContent = '⏱️ 0s';
+  const timer = document.createElement("span");
+  timer.className = "meta";
+  timer.textContent = "⏱️ 0s";
 
   rowTop.appendChild(title);
   rowTop.appendChild(envSelect);
 
   // tags do cenário
-  const tagsWrap = document.createElement('span');
-  (scenario.tags || []).forEach(t => {
-    const pill = document.createElement('span');
-    pill.className = 'tagPill';
+  const tagsWrap = document.createElement("span");
+  (scenario.tags || []).forEach((t) => {
+    const pill = document.createElement("span");
+    pill.className = "tagPill";
     pill.textContent = `#${t}`;
     tagsWrap.appendChild(pill);
   });
@@ -131,26 +133,26 @@ function createScenarioCard({ project, scenario }) {
   rowTop.appendChild(status);
   rowTop.appendChild(timer);
 
-  const rowActions = document.createElement('div');
-  rowActions.className = 'row';
+  const rowActions = document.createElement("div");
+  rowActions.className = "row";
 
-  const playBtn = document.createElement('button');
-  playBtn.className = 'primary';
-  playBtn.textContent = '▶ Play';
+  const playBtn = document.createElement("button");
+  playBtn.className = "primary";
+  playBtn.textContent = "▶ Play";
 
-  const stopBtn = document.createElement('button');
-  stopBtn.className = 'danger';
-  stopBtn.textContent = '⛔ Stop';
-  stopBtn.style.display = 'none';
+  const stopBtn = document.createElement("button");
+  stopBtn.className = "danger";
+  stopBtn.textContent = "⛔ Stop";
+  stopBtn.style.display = "none";
 
   rowActions.appendChild(playBtn);
   rowActions.appendChild(stopBtn);
 
-  const log = document.createElement('pre');
+  const log = document.createElement("pre");
 
   scenarioDiv.appendChild(rowTop);
   scenarioDiv.appendChild(rowActions);
-  scenarioDiv.appendChild(log);
+//   scenarioDiv.appendChild(log);
 
   let source = null;
   let executionId = null;
@@ -160,15 +162,15 @@ function createScenarioCard({ project, scenario }) {
 
   function setUIStateIdle() {
     playBtn.disabled = false;
-    playBtn.textContent = '▶ Play';
-    stopBtn.style.display = 'none';
+    playBtn.textContent = "▶ Play";
+    stopBtn.style.display = "none";
     stopBtn.disabled = false;
     queuePos = null;
   }
 
   function startTimer() {
     startedAt = Date.now();
-    timer.textContent = '⏱️ 0s';
+    timer.textContent = "⏱️ 0s";
     interval = setInterval(() => {
       const ms = Date.now() - startedAt;
       timer.textContent = `⏱️ ${msToHuman(ms)}`;
@@ -182,7 +184,7 @@ function createScenarioCard({ project, scenario }) {
 
   function setStatusUI(st) {
     status.className = `status ${st}`;
-    if (st === 'QUEUED' && queuePos) {
+    if (st === "QUEUED" && queuePos) {
       status.textContent = `QUEUED (#${queuePos})`;
     } else {
       status.textContent = st;
@@ -191,80 +193,82 @@ function createScenarioCard({ project, scenario }) {
 
   async function runOnce(customEnvId) {
     if (!project.environments || project.environments.length === 0) {
-      alert('Este projeto não possui ambientes cadastrados.');
+      alert("Este projeto não possui ambientes cadastrados.");
       return;
     }
 
-    log.textContent = '';
+    log.textContent = "";
     playBtn.disabled = true;
-    playBtn.textContent = '⏳';
-    stopBtn.style.display = 'inline-block';
+    playBtn.textContent = "⏳";
+    stopBtn.style.display = "inline-block";
     stopBtn.disabled = false;
 
     executionId = generateExecutionId();
     const environmentId = customEnvId || envSelect.value;
 
     queuePos = null;
-    setStatusUI('CONNECTING');
+    setStatusUI("CONNECTING");
     startTimer();
 
     // abre SSE
     source = new EventSource(`${API}/stream/${executionId}`);
 
     source.onopen = async () => {
-      setStatusUI('QUEUED');
+      setStatusUI("QUEUED");
       await fetch(`${API}/run`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           executionId,
           projectId: project.id,
           scenarioId: scenario.id,
-          environmentId
-        })
+          environmentId,
+        }),
       });
     };
 
     source.onmessage = (event) => {
       const msg = event.data;
 
-      if (msg.startsWith('__STATS__:')) {
+      if (msg.startsWith("__STATS__:")) {
         try {
-          const payload = JSON.parse(msg.replace('__STATS__:', ''));
+          const payload = JSON.parse(msg.replace("__STATS__:", ""));
           updateStatsUI(payload);
         } catch {}
         return;
       }
 
-      if (msg.startsWith('__QUEUEPOS__:')) {
-        queuePos = Number(msg.split(':')[1]);
-        setStatusUI('QUEUED');
+      if (msg.startsWith("__QUEUEPOS__:")) {
+        queuePos = Number(msg.split(":")[1]);
+        setStatusUI("QUEUED");
         return;
       }
 
-      if (msg.startsWith('__STATUS__:')) {
-        const st = msg.split(':')[1];
+      if (msg.startsWith("__STATUS__:")) {
+        const st = msg.split(":")[1];
         setStatusUI(st);
         return;
       }
 
-      if (msg === '__CANCELLED__') {
-        setStatusUI('CANCELLED');
-        log.textContent += '\n[EXECUTION CANCELLED]\n';
+      if (msg === "__CANCELLED__") {
+        setStatusUI("CANCELLED");
+        log.textContent += "\n[EXECUTION CANCELLED]\n";
         return;
       }
 
-      if (msg.startsWith('__END__')) {
-        const parts = msg.split(':');
+      if (msg.startsWith("__END__")) {
+        const parts = msg.split(":");
         const code = parts[1];
 
         stopTimer();
 
-        if (code === '0') setStatusUI('SUCCESS');
-        else if (code === 'CANCELLED') setStatusUI('CANCELLED');
-        else setStatusUI('FAILED');
+        if (code === "0") setStatusUI("SUCCESS");
+        else if (code === "CANCELLED") setStatusUI("CANCELLED");
+        else setStatusUI("FAILED");
 
-        try { source.close(); } catch {}
+        try {
+          source.close();
+        } catch {}
         source = null;
 
         setUIStateIdle();
@@ -279,9 +283,11 @@ function createScenarioCard({ project, scenario }) {
 
     source.onerror = async () => {
       stopTimer();
-      setStatusUI('FAILED');
-      log.textContent += '\n[SSE ERROR]\n';
-      try { source.close(); } catch {}
+      setStatusUI("FAILED");
+      log.textContent += "\n[SSE ERROR]\n";
+      try {
+        source.close();
+      } catch {}
       source = null;
       setUIStateIdle();
       await refreshStats();
@@ -290,9 +296,9 @@ function createScenarioCard({ project, scenario }) {
     stopBtn.onclick = async () => {
       stopBtn.disabled = true;
       await fetch(`${API}/stop`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ executionId })
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ executionId }),
       });
     };
   }
@@ -303,38 +309,40 @@ function createScenarioCard({ project, scenario }) {
     element: scenarioDiv,
     runOnce,
     getSelectedEnv: () => envSelect.value,
-    setSelectedEnv: (envId) => { envSelect.value = envId; }
+    setSelectedEnv: (envId) => {
+      envSelect.value = envId;
+    },
   };
 }
 
 function renderProjects(projects) {
-  projectsEl.innerHTML = '';
+  projectsEl.innerHTML = "";
 
   for (const project of projects) {
-    const div = document.createElement('div');
-    div.className = 'project';
+    const div = document.createElement("div");
+    div.className = "project";
 
-    const headerWrap = document.createElement('div');
-    headerWrap.className = 'projectHeader';
+    const headerWrap = document.createElement("div");
+    headerWrap.className = "projectHeader";
 
     const scenariosCount = (project.scenarios || []).length;
 
-    const title = document.createElement('h3');
-    title.className = 'projectTitle';
+    const title = document.createElement("h3");
+    title.className = "projectTitle";
     title.innerHTML = `<span>📦 ${project.name}</span><span class="badge">${scenariosCount} cenário(s)</span>`;
 
-    const tools = document.createElement('div');
-    tools.className = 'projectTools';
+    const tools = document.createElement("div");
+    tools.className = "projectTools";
 
     // Botão Run All
-    const runAllBtn = document.createElement('button');
-    runAllBtn.className = 'ghost';
-    runAllBtn.textContent = '▶ Run All';
+    const runAllBtn = document.createElement("button");
+    runAllBtn.className = "ghost";
+    runAllBtn.textContent = "▶ Run All";
 
     // Select de ambiente por projeto (aplica para Run All / Run Tag)
-    const envSelectProject = document.createElement('select');
+    const envSelectProject = document.createElement("select");
     for (const e of project.environments || []) {
-      const opt = document.createElement('option');
+      const opt = document.createElement("option");
       opt.value = e.id;
       opt.textContent = e.name;
       envSelectProject.appendChild(opt);
@@ -342,22 +350,22 @@ function renderProjects(projects) {
 
     // Tags do projeto
     const tags = getProjectTags(project);
-    const tagSelect = document.createElement('select');
-    const opt0 = document.createElement('option');
-    opt0.value = '';
-    opt0.textContent = 'Tag (opcional)';
+    const tagSelect = document.createElement("select");
+    const opt0 = document.createElement("option");
+    opt0.value = "";
+    opt0.textContent = "Tag (opcional)";
     tagSelect.appendChild(opt0);
 
     for (const t of tags) {
-      const o = document.createElement('option');
+      const o = document.createElement("option");
       o.value = t;
       o.textContent = `#${t}`;
       tagSelect.appendChild(o);
     }
 
-    const runTagBtn = document.createElement('button');
-    runTagBtn.className = 'ghost';
-    runTagBtn.textContent = '▶ Run Tag';
+    const runTagBtn = document.createElement("button");
+    runTagBtn.className = "ghost";
+    runTagBtn.textContent = "▶ Run Tag";
 
     tools.appendChild(envSelectProject);
     tools.appendChild(runAllBtn);
@@ -367,11 +375,12 @@ function renderProjects(projects) {
     headerWrap.appendChild(title);
     headerWrap.appendChild(tools);
 
-    const scenariosDiv = document.createElement('div');
-    scenariosDiv.className = 'scenarios';
+    const scenariosDiv = document.createElement("div");
+    scenariosDiv.className = "scenarios";
 
     title.onclick = () => {
-      scenariosDiv.style.display = scenariosDiv.style.display === 'block' ? 'none' : 'block';
+      scenariosDiv.style.display =
+        scenariosDiv.style.display === "block" ? "none" : "block";
     };
 
     // cria cards e guarda runners
@@ -386,7 +395,7 @@ function renderProjects(projects) {
     runAllBtn.onclick = async () => {
       const envId = envSelectProject.value;
       // garante aberto
-      scenariosDiv.style.display = 'block';
+      scenariosDiv.style.display = "block";
       for (const item of scenarioRunners) {
         item.card.setSelectedEnv(envId);
         item.card.runOnce(envId);
@@ -398,10 +407,10 @@ function renderProjects(projects) {
       const envId = envSelectProject.value;
       const tag = tagSelect.value;
       if (!tag) {
-        alert('Selecione uma tag para rodar.');
+        alert("Selecione uma tag para rodar.");
         return;
       }
-      scenariosDiv.style.display = 'block';
+      scenariosDiv.style.display = "block";
       for (const item of scenarioRunners) {
         const scTags = item.scenario.tags || [];
         if (scTags.includes(tag)) {
@@ -420,7 +429,7 @@ function renderProjects(projects) {
 async function downloadFile(url, filename) {
   const r = await fetch(url);
   const blob = await r.blob();
-  const a = document.createElement('a');
+  const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   a.download = filename;
   document.body.appendChild(a);
@@ -429,8 +438,10 @@ async function downloadFile(url, filename) {
   URL.revokeObjectURL(a.href);
 }
 
-exportCsvBtn.onclick = () => downloadFile(`${API}/history/export?format=csv`, 'history.csv');
-exportJsonBtn.onclick = () => downloadFile(`${API}/history/export?format=json`, 'history.json');
+exportCsvBtn.onclick = () =>
+  downloadFile(`${API}/history/export?format=csv`, "history.csv");
+exportJsonBtn.onclick = () =>
+  downloadFile(`${API}/history/export?format=json`, "history.json");
 
 refreshHistoryBtn.onclick = refreshHistory;
 
@@ -443,8 +454,24 @@ async function boot() {
   // polling leve de stats (se SSE não estiver ativo em alguma execução)
   setInterval(refreshStats, 3000);
 }
+function formatDateBR(isoString) {
+  if (!isoString) return "-";
 
-boot().catch(err => {
+  const date = new Date(isoString);
+
+  return date.toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+}
+
+boot().catch((err) => {
   console.error(err);
-  projectsEl.innerHTML = `<div style="color:#ef4444">Erro ao iniciar: ${String(err)}</div>`;
+  projectsEl.innerHTML = `<div style="color:#ef4444">Erro ao iniciar: ${String(
+    err
+  )}</div>`;
 });
