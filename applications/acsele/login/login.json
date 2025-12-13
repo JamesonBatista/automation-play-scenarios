@@ -2,13 +2,11 @@
   {
     "id": "login",
     "name": "Acessando Login acsele",
-    "file": "tests/acsele/login.spec.ts",
-    "tags": ["smoke", "regression"]
+    "file": "tests/acsele/login.spec.ts"
   },
   {
     "id": "cadastro",
     "name": "Cadastro com sucesso",
-    "file": "tests/acsele/login.spec.ts",
-    "tags": ["smoke", "regression"]
+    "file": "tests/acsele/login.spec.ts"
   }
 ]

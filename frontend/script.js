@@ -369,8 +369,8 @@ function renderProjects(projects) {
 
     tools.appendChild(envSelectProject);
     tools.appendChild(runAllBtn);
-    tools.appendChild(tagSelect);
-    tools.appendChild(runTagBtn);
+    // tools.appendChild(tagSelect);
+    // tools.appendChild(runTagBtn);
 
     headerWrap.appendChild(title);
     headerWrap.appendChild(tools);
