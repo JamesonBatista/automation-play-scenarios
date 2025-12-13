@@ -1,7 +1,7 @@
 [
   {
     "id": "login",
-    "name": "Login ACSELE",
+    "name": "Acessando Login acsele",
     "file": "tests/acsele/login.spec.ts",
     "tags": ["smoke", "regression"]
   },

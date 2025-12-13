@@ -11,7 +11,8 @@ app.use(express.json());
 const PORT = 3000;
 const MAX_CONCURRENT = Number(process.env.MAX_CONCURRENT || 2);
 
-const APPLICATIONS_DIR = path.join(__dirname, "applications");
+const APPLICATIONS_DIR = path.resolve(__dirname, '..', 'applications');
+
 const HISTORY_FILE = path.join(__dirname, "history.json");
 
 /**
@@ -389,38 +390,47 @@ app.get("/stream/:id", (req, res) => {
    RUN
 ========================== */
 
-app.post("/run", (req, res) => {
+app.post('/run', (req, res) => {
   const { executionId, projectId, scenarioId, environmentId } = req.body;
 
   const projects = loadProjectsFromApplications();
-  const project = projects.find((p) => p.id === projectId);
-  const scenario = project?.scenarios?.find((s) => s.id === scenarioId);
-  const environment = project?.environments?.find(
-    (e) => e.id === environmentId
-  );
 
-  if (!project)
-    return res.status(400).json({ ok: false, error: "Invalid projectId" });
-  if (!scenario)
-    return res.status(400).json({ ok: false, error: "Invalid scenarioId" });
-  if (!environment)
-    return res.status(400).json({ ok: false, error: "Invalid environmentId" });
+  const project = projects.find(p => p.id === projectId);
+  if (!project) {
+    return res.status(400).json({ error: 'Projeto inválido' });
+  }
+
+  const scenario = project.scenarios.find(s => s.id === scenarioId);
+  if (!scenario) {
+    return res.status(400).json({
+      error: `Cenário não encontrado: ${scenarioId}`
+    });
+  }
+
+  const environment = project.environments.find(e => e.id === environmentId);
+  if (!environment) {
+    return res.status(400).json({ error: 'Ambiente inválido' });
+  }
 
   executions.set(executionId, {
     executionId,
+
     projectId: project.id,
     projectName: project.name,
-    scenarioId: scenario.id,
-    scenarioName: scenario.name,
+
+    scenarioId: scenario.id,          // ✅ VEM DO JSON
+    scenarioName: scenario.name,      // ✅ VEM DO JSON
     file: scenario.file,
     tags: scenario.tags || [],
+
     environmentId: environment.id,
     environmentName: environment.name,
     baseUrl: environment.baseUrl,
-    status: "CREATED",
+
+    status: 'CREATED',
     startedAt: nowISO(),
     updatedAt: nowISO(),
-    startTime: Date.now(),
+    startTime: Date.now()
   });
 
   res.json({ ok: true });

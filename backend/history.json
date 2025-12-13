@@ -1,21 +1,44 @@
 [
   {
-    "executionId": "mj48gcfirkk0bbkbjc",
+    "executionId": "mj49upxwac4ptcbs78o",
     "projectId": "acsele",
     "projectName": "ACSELE",
-    "scenarioId": "acsele",
-    "scenarioName": "ACSELE",
-    "tags": [],
+    "scenarioId": "login",
+    "scenarioName": "Acessando Login acsele",
+    "file": "tests/acsele/login.spec.ts",
+    "tags": [
+      "smoke",
+      "regression"
+    ],
+    "environmentId": "QA",
+    "environmentName": "QA",
+    "baseUrl": "https://jamesonbatista.github.io/projectqatesterweb/",
+    "status": "SUCCESS",
+    "startedAt": "2025-12-13T12:28:09.059Z",
+    "finishedAt": "2025-12-13T12:28:20.092Z",
+    "durationMs": 11033
+  },
+  {
+    "executionId": "mj49uhjxqd0fxmqqugt",
+    "projectId": "acsele",
+    "projectName": "ACSELE",
+    "scenarioId": "login",
+    "scenarioName": "Acessando Login acsele",
+    "file": "tests/acsele/login.spec.ts",
+    "tags": [
+      "smoke",
+      "regression"
+    ],
     "environmentId": "QA",
     "environmentName": "QA",
     "baseUrl": "https://jamesonbatista.github.io/projectqatesterweb/",
     "status": "CANCELLED",
-    "startedAt": "2025-12-13T11:48:58.750Z",
-    "finishedAt": "2025-12-13T11:49:00.637Z",
-    "durationMs": 1887
+    "startedAt": "2025-12-13T12:27:58.204Z",
+    "finishedAt": "2025-12-13T12:28:01.579Z",
+    "durationMs": 3375
   },
   {
-    "executionId": "mj48g210c221mdxb1j",
+    "executionId": "mj49q55fj5kfsa7zxbg",
     "projectId": "acsele",
     "projectName": "ACSELE",
     "scenarioId": "acsele",
@@ -25,12 +48,12 @@
     "environmentName": "QA",
     "baseUrl": "https://jamesonbatista.github.io/projectqatesterweb/",
     "status": "SUCCESS",
-    "startedAt": "2025-12-13T11:48:45.281Z",
-    "finishedAt": "2025-12-13T11:48:55.952Z",
-    "durationMs": 10671
+    "startedAt": "2025-12-13T12:24:35.505Z",
+    "finishedAt": "2025-12-13T12:24:46.514Z",
+    "durationMs": 11009
   },
   {
-    "executionId": "mj48ezu2rjh1bgsj0pq",
+    "executionId": "mj49iw6wrl4hkh0wq69",
     "projectId": "acsele",
     "projectName": "ACSELE",
     "scenarioId": "acsele",
@@ -40,65 +63,23 @@
     "environmentName": "QA",
     "baseUrl": "https://jamesonbatista.github.io/projectqatesterweb/",
     "status": "SUCCESS",
-    "startedAt": "2025-12-13T11:47:55.793Z",
-    "finishedAt": "2025-12-13T11:48:08.132Z",
-    "durationMs": 12339
+    "startedAt": "2025-12-13T12:18:57.333Z",
+    "finishedAt": "2025-12-13T12:19:08.440Z",
+    "durationMs": 11107
   },
   {
-    "executionId": "mj3mgno80vmi82ppunqd",
+    "executionId": "mj49er1ssxa1jxki14f",
     "projectId": "acsele",
     "projectName": "ACSELE",
-    "scenarioId": "login",
-    "scenarioName": "Login ACSELE",
-    "file": "tests/acsele/login.spec.ts",
-    "tags": [
-      "smoke",
-      "regression"
-    ],
-    "environmentId": "DEV",
-    "environmentName": "DEV",
-    "baseUrl": "https://dev.acsele.local",
+    "scenarioId": "acsele",
+    "scenarioName": "ACSELE",
+    "tags": [],
+    "environmentId": "QA",
+    "environmentName": "QA",
+    "baseUrl": "https://jamesonbatista.github.io/projectqatesterweb/",
     "status": "SUCCESS",
-    "startedAt": "2025-12-13T01:33:21.780Z",
-    "finishedAt": "2025-12-13T01:33:33.510Z",
-    "durationMs": 11730
-  },
-  {
-    "executionId": "mj3fuktfyjj7l4zbhkd",
-    "projectId": "acsele",
-    "projectName": "ACSELE",
-    "scenarioId": "login",
-    "scenarioName": "Login ACSELE",
-    "file": "tests/acsele/login.spec.ts",
-    "tags": [
-      "smoke",
-      "regression"
-    ],
-    "environmentId": "DEV",
-    "environmentName": "DEV",
-    "baseUrl": "https://dev.acsele.local",
-    "status": "SUCCESS",
-    "startedAt": "2025-12-12T22:28:13.954Z",
-    "finishedAt": "2025-12-12T22:28:25.054Z",
-    "durationMs": 11100
-  },
-  {
-    "executionId": "mj3afuhl5n1cduarpzj",
-    "projectId": "acsele",
-    "projectName": "ACSELE",
-    "scenarioId": "login",
-    "scenarioName": "Login ACSELE",
-    "file": "tests/acsele/login.spec.ts",
-    "tags": [
-      "smoke",
-      "regression"
-    ],
-    "environmentId": "DEV",
-    "environmentName": "DEV",
-    "baseUrl": "https://dev.acsele.local",
-    "status": "SUCCESS",
-    "startedAt": "2025-12-12T19:56:48.551Z",
-    "finishedAt": "2025-12-12T19:56:58.322Z",
-    "durationMs": 9771
+    "startedAt": "2025-12-13T12:15:43.998Z",
+    "finishedAt": "2025-12-13T12:15:55.483Z",
+    "durationMs": 11485
   }
 ]
