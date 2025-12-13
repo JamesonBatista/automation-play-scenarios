@@ -1,5 +1,39 @@
 [
   {
+    "executionId": "mj48ezu2rjh1bgsj0pq",
+    "projectId": "acsele",
+    "projectName": "ACSELE",
+    "scenarioId": "acsele",
+    "scenarioName": "ACSELE",
+    "tags": [],
+    "environmentId": "QA",
+    "environmentName": "QA",
+    "baseUrl": "https://jamesonbatista.github.io/projectqatesterweb/",
+    "status": "SUCCESS",
+    "startedAt": "2025-12-13T11:47:55.793Z",
+    "finishedAt": "2025-12-13T11:48:08.132Z",
+    "durationMs": 12339
+  },
+  {
+    "executionId": "mj3mgno80vmi82ppunqd",
+    "projectId": "acsele",
+    "projectName": "ACSELE",
+    "scenarioId": "login",
+    "scenarioName": "Login ACSELE",
+    "file": "tests/acsele/login.spec.ts",
+    "tags": [
+      "smoke",
+      "regression"
+    ],
+    "environmentId": "DEV",
+    "environmentName": "DEV",
+    "baseUrl": "https://dev.acsele.local",
+    "status": "SUCCESS",
+    "startedAt": "2025-12-13T01:33:21.780Z",
+    "finishedAt": "2025-12-13T01:33:33.510Z",
+    "durationMs": 11730
+  },
+  {
     "executionId": "mj3fuktfyjj7l4zbhkd",
     "projectId": "acsele",
     "projectName": "ACSELE",
