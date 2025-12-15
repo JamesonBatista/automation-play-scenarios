@@ -6,7 +6,7 @@
       {
         "id": "login",
         "name": "Login ACSELE",
-        "file": "tests/acsele/login.spec.ts",
+        "file": "tests/ACSELE/login.spec.ts",
         "tags": ["smoke", "regression"]
       }
     ]

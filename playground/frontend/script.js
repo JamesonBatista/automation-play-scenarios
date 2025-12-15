@@ -7,7 +7,11 @@ const API = "http://localhost:3000";
 const USERS = [
   { name: "Roberto", password: "123", projects: ["ACSELE", "CLAIMS"] },
   { name: "Maria", password: "123", projects: ["GTI", "CLAIMS"] },
-  { name: "Admin", password: "admin", projects: ["ACSELE", "GTI", "CLAIMS", "AXAHUB"] },
+  {
+    name: "Admin",
+    password: "admin",
+    projects: ["ACSELE", "GTI", "CLAIMS", "AXAHUB"],
+  },
 ];
 
 /* ==========================
@@ -47,9 +51,7 @@ function getLoggedUser() {
 }
 
 function login(user, pass) {
-  const found = USERS.find(
-    (u) => u.name === user && u.password === pass
-  );
+  const found = USERS.find((u) => u.name === user && u.password === pass);
   if (!found) return null;
 
   localStorage.setItem("loggedUser", JSON.stringify(found));
@@ -139,9 +141,7 @@ async function loadStats() {
 
 function filterProjectsByUser(projects, user) {
   const allowed = user.projects.map((p) => p.toLowerCase());
-  return projects.filter((p) =>
-    allowed.includes(p.id.toLowerCase())
-  );
+  return projects.filter((p) => allowed.includes(p.id.toLowerCase()));
 }
 
 function updateStatsUI({ running, maxConcurrent, queued }) {
@@ -332,6 +332,11 @@ function renderProjects(projects) {
     const title = document.createElement("h3");
     title.className = "projectTitle";
     title.textContent = `📦 ${project.name}`;
+
+    const countBadge = document.createElement("span");
+    countBadge.className = "badge";
+    countBadge.textContent = `${project.scenarios.length} cenários`;
+    title.appendChild(countBadge);
 
     const tools = document.createElement("div");
     tools.className = "projectTools";
