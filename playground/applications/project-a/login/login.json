@@ -2,11 +2,11 @@
   {
     "id": "login",
     "name": "Acessando Login",
-    "file": "tests/PROJECTA/login.spec.ts"
+    "file": "tests/project_a/login.spec.ts"
   },
   {
     "id": "cadastro",
     "name": "Cadastro com sucesso",
-    "file": "tests/PROJECTA/login.spec.ts"
+    "file": "tests/project_a/login.spec.ts"
   }
 ]
