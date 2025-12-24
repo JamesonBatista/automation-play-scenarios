@@ -242,6 +242,10 @@ function runExecution(executionId) {
 
   setStatus(executionId, "RUNNING");
 
+  console.log("\nENV: ", exec.environmentName, "BASEURL: ", exec.baseUrl);
+  process.env.ENV = exec.environmentName;
+  process.env.BASE_URL = exec.baseUrl;
+
   const child = spawn(
     "npx",
     ["playwright", "test", exec.file, "--reporter=list"],

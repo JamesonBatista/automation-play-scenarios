@@ -1,7 +1,7 @@
 [
   {
     "id": "QA",
-    "name": "QA"
+    "name": "QA", "baseUrl":"https://jamesonbatista.github.io/"
   },
-  { "id": "HML04", "name": "HML04" }
+  { "id": "HML04", "name": "HML04", "baseUrl": "https://jamesonbatista.github.io/" }
 ]

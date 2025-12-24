@@ -41,8 +41,8 @@ export default defineConfig({
   },
 
   projects: [
-    { name: 'ACSELE', 
-      use: { channel: "chrome", baseURL: "https://jamesonbatista.github.io/" }, }
+    { name: 'QA', 
+      use: { channel: "chrome"}, }
   ],
 
   outputDir: 'test-results'

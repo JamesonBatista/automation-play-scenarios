@@ -22,12 +22,14 @@
   {
     "id": "login",
     "name": "Acessando Login",
-    "file": "tests/PROJECTA/login.spec.ts"
+    "file": "tests/project_a/login.spec.ts"
   },
   {
     "id": "cadastro",
     "name": "Cadastro com sucesso",
-    "file": "tests/PROJECTA/login.spec.ts"
+    "file": "tests/project_a/login.spec.ts"
   }
 ]
+
 ```
+- No `server.js` em `playground/backend/server.js` na linha 246, 247 estão definidos a ENV e a BASE_URL de acordo com o ambiente. Isso reflete no `page.goto` usado no teste.

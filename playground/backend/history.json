@@ -1,6 +1,6 @@
 [
   {
-    "executionId": "mjj3td1ycrvu9dodhv",
+    "executionId": "mjjx28whvxvhu5b4gs",
     "projectId": "project-a",
     "projectName": "PROJECT-A",
     "scenarioId": "login",
@@ -9,9 +9,10 @@
     "tags": [],
     "environmentId": "QA",
     "environmentName": "QA",
+    "baseUrl": "https://jamesonbatista.github.io/",
     "status": "SUCCESS",
-    "startedAt": "2025-12-23T21:35:40.666Z",
-    "finishedAt": "2025-12-23T21:35:46.650Z",
-    "durationMs": 5984
+    "startedAt": "2025-12-24T11:14:24.061Z",
+    "finishedAt": "2025-12-24T11:14:30.199Z",
+    "durationMs": 6138
   }
 ]
